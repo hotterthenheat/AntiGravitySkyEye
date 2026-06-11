@@ -57,6 +57,7 @@ interface ContractStore {
   setSelectedTimeframe: (tf: TimeframeVal) => void;
   setSelectedOptionType: (type: 'C' | 'P') => void;
   setSelectedStrike: (strike: number | null) => void;
+  selectContractAtomically: (asset: AssetInfo, strike: number, isCall: boolean) => void;
   setIsPositionOpen: (open: boolean) => void;
   setTrades: (trades: V8TradeRecord[]) => void;
   
@@ -144,14 +145,16 @@ export const useContractStore = create<ContractStore>((set, get) => ({
   marketState: getMarketState(),
 
   setSelectedAsset: (asset) => {
-    set({ selectedAsset: asset, selectedStrike: null });
-    // Proactively preload heuristic active state if none exists in cache yet
-    get().selectContract(asset.ticker, asset.defaultPrice, get().selectedOptionType === 'C');
+    const step = asset.defaultPrice > 1000 ? 100 : asset.defaultPrice > 150 ? 5 : 1;
+    const initialStrike = Math.round(asset.defaultPrice / step) * step;
+    set({ selectedAsset: asset, selectedStrike: initialStrike });
+    get().selectContract(asset.ticker, initialStrike, get().selectedOptionType === 'C');
   },
   setSelectedTimeframe: (tf) => set({ selectedTimeframe: tf }),
   setSelectedOptionType: (type) => {
+    const step = get().selectedAsset.defaultPrice > 1000 ? 100 : get().selectedAsset.defaultPrice > 150 ? 5 : 1;
+    const currentStrike = get().selectedStrike || Math.round(get().selectedAsset.defaultPrice / step) * step;
     set({ selectedOptionType: type });
-    const currentStrike = get().selectedStrike || Math.round(get().selectedAsset.defaultPrice / 10) * 10;
     get().selectContract(get().selectedAsset.ticker, currentStrike, type === 'C');
   },
   setSelectedStrike: (strike) => {
@@ -159,6 +162,14 @@ export const useContractStore = create<ContractStore>((set, get) => ({
     if (strike) {
       get().selectContract(get().selectedAsset.ticker, strike, get().selectedOptionType === 'C');
     }
+  },
+  selectContractAtomically: (asset, strike, isCall) => {
+    set({
+      selectedAsset: asset,
+      selectedStrike: strike,
+      selectedOptionType: isCall ? 'C' : 'P'
+    });
+    get().selectContract(asset.ticker, strike, isCall);
   },
   setIsPositionOpen: (open) => set({ isPositionOpen: open }),
   setTrades: (trades) => set({ trades }),
@@ -205,6 +216,29 @@ export const useContractStore = create<ContractStore>((set, get) => ({
 
   updateFromSSE: (payload: any) => {
     if (!payload) return;
+
+    // 1. Race condition guard: Ensure the received payload is for the currently selected asset, option type, and strike!
+    const payloadTicker = payload.contract.replace('-', ' ').split(' ')[0];
+    const currentTicker = get().selectedAsset.ticker;
+
+    const payloadIsCall = payload.provenance?.inputs?.option_type === 'C';
+    const currentIsCall = get().selectedOptionType === 'C';
+
+    const payloadStrike = payload.optionStrike;
+    const currentStrike = get().selectedStrike;
+
+    if (payloadTicker !== currentTicker) {
+      console.warn(`[SSE Race Condition Guard] Ignored stale payload for ${payloadTicker} (active: ${currentTicker})`);
+      return;
+    }
+    if (payloadIsCall !== currentIsCall) {
+      console.warn(`[SSE Race Condition Guard] Ignored stale payload for type ${payloadIsCall ? 'C' : 'P'} (active: ${currentIsCall ? 'C' : 'P'})`);
+      return;
+    }
+    if (currentStrike !== null && payloadStrike !== currentStrike) {
+      console.warn(`[SSE Race Condition Guard] Ignored stale payload for strike ${payloadStrike} (active: ${currentStrike})`);
+      return;
+    }
 
     const contractKey = payload.contract.replace(/\s+/g, '-'); // e.g. "SPX-7620C"
     

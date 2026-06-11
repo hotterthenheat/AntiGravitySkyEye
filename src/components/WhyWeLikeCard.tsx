@@ -65,7 +65,7 @@ export function WhyWeLikeCard({ score, isBullish = true, asset }: WhyWeLikeTrade
     {
       label: 'Positive Historical Similar Setups',
       status: historicalPositive,
-      description: `V10 calibration updates prior results to estimate a precise ${metrics.posteriorWinRate}% Bayesian win rate on identical historic structures.`,
+      description: `V10 calibration aligns patterns to precedents. Estimated Bayesian likelihood is calibrated at ${metrics.posteriorWinRate}% based on historical backtest indicators.`,
     },
   ];
 
