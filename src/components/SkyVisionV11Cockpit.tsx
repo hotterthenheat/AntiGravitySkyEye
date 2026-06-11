@@ -332,7 +332,7 @@ export function SkyVisionV11Cockpit({
             <div className="p-3 bg-zinc-950/40 border-t border-zinc-900 text-[10.5px] leading-relaxed font-sans text-zinc-400">
               <span className="font-bold text-zinc-300 font-mono uppercase text-[9.5px]">Master Historic Precedent Summary:</span>
               <p className="mt-0.5">
-                The similarity module tracked 5 high-correlation precedents with a <span className="text-emerald-400 font-bold">80.0% historic win rate</span>. Average excursion run equals <span className="text-emerald-400 font-bold">+2.2R</span>, median adverse drawdown restricted to <span className="text-rose-500 font-bold">1.2%</span>.
+                The similarity module tracked {metrics.similarTrades.length} high-correlation precedents in the backtest archive with a <span className="text-emerald-400 font-bold">{(metrics.similarTrades.filter(t => t.win).length / (metrics.similarTrades.length || 1) * 100).toFixed(1)}% historic win rate</span>. Average PnL excursion equals <span className="text-emerald-400 font-bold">+{(metrics.similarTrades.reduce((acc, t) => acc + t.pnlMultiplier, 0) / (metrics.similarTrades.length || 1)).toFixed(2)}R</span>, median adverse drawdown restricted to <span className="text-rose-500 font-bold">{(metrics.similarTrades.reduce((acc, t) => acc + t.maxDrawdown, 0) / (metrics.similarTrades.length || 1)).toFixed(1)}%</span>.
               </p>
             </div>
           </div>

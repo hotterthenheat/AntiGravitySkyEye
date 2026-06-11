@@ -402,14 +402,14 @@ export default function PinpointAI({ selectedAsset, systemScore }: PinpointAIPro
 
         {/* Current Info Badges */}
         <div className="flex gap-2 text-[9.5px]">
-          <div className="px-2 py-1 bg-[#121214] border border-zinc-850 rounded-xs">
+          <div className="px-2 py-1 bg-[#121214] border border-[#27272a] rounded-xs">
             <span className="text-zinc-500">ASSET:</span> <span className="text-white font-bold">{selectedAsset.ticker}</span>
           </div>
-          <div className="px-2 py-1 bg-[#121214] border border-zinc-850 rounded-xs">
+          <div className="px-2 py-1 bg-[#121214] border border-[#27272a] rounded-xs">
             <span className="text-zinc-500">T0 VALIDITY:</span> <span className="text-emerald-400 font-bold">OPTIMAL</span>
           </div>
-          <div className="px-2 py-1 bg-[#121214] border border-zinc-850 rounded-xs">
-            <span className="text-zinc-500">LATENCY:</span> <span className="text-white font-bold">0.002s</span>
+          <div className="px-2 py-1 bg-[#121214] border border-[#27272a] rounded-xs">
+            <span className="text-zinc-500">FEED STYLE:</span> <span className="text-white font-bold">REALTIME STREAM</span>
           </div>
         </div>
       </div>

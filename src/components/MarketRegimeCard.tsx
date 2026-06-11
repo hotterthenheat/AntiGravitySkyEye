@@ -36,7 +36,7 @@ export function MarketRegimeCard({ score, assetTicker }: MarketRegimeProps) {
           </div>
           <span className="text-[10px] tracking-[0.25em] text-[#888888] font-bold uppercase">GLOBAL MARKET REGIME</span>
         </div>
-        <span className="text-[8px] text-[#888888]">REFRESH FEED: LATENCY 14MS</span>
+        <span className="text-[8px] text-[#888888]">REFRESH FEED: STREAM ACTIVE</span>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
