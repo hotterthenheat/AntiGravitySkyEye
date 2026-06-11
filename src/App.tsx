@@ -438,36 +438,44 @@ export default function App() {
 
         {/* TAB 2: SKYVISION (DECISION ENGINE) */}
         {activeTab === 'skyvision' && (
-          <SkyVisionView />
+          <div className="view-enter">
+            <SkyVisionView />
+          </div>
         )}
 
         {/* TAB 3: PINPOINT AI (MARKET INTELLIGENCE) */}
         {activeTab === 'pinpoint' && (
-          <PinpointAIView />
+          <div className="view-enter">
+            <PinpointAIView />
+          </div>
         )}
 
         {/* TAB 4: DISCOVERY (OPPORTUNITY ENGINE) */}
         {activeTab === 'discovery' && (
-          <DiscoveryView
-            systemScore={serverState.system_score}
-            discovery={serverState.discovery}
-            onSelectContract={(asset, strike, isCall) => {
-              useContractStore.getState().selectContractAtomically(asset, strike, isCall);
-              setActiveTab('skyvision');
-            }}
-          />
+          <div className="view-enter">
+            <DiscoveryView
+              systemScore={serverState.system_score}
+              discovery={serverState.discovery}
+              onSelectContract={(asset, strike, isCall) => {
+                useContractStore.getState().selectContractAtomically(asset, strike, isCall);
+                setActiveTab('skyvision');
+              }}
+            />
+          </div>
         )}
 
         {/* TAB 5: AUDIT (TRUST ENGINE) */}
         {activeTab === 'auditor' && (
-          <QuantAuditView
-            selectedAsset={selectedAsset}
-            isCall={selectedOptionType === 'C'}
-            systemScore={serverState.system_score}
-            optionPremium={serverState.optionPremiumFloat}
-            trades={serverState.trade_archive}
-            onClearTrades={clearV8Trades}
-          />
+          <div className="view-enter">
+            <QuantAuditView
+              selectedAsset={selectedAsset}
+              isCall={selectedOptionType === 'C'}
+              systemScore={serverState.system_score}
+              optionPremium={serverState.optionPremiumFloat}
+              trades={serverState.trade_archive}
+              onClearTrades={clearV8Trades}
+            />
+          </div>
         )}
       </main>
 
